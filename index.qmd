@@ -1,11 +1,85 @@
 ---
-title: "biocontainers"
+title: "Introducción a Apptainer"
 ---
 
-This is a Quarto website.
+# **Tutorial: Uso de Apptainer para Contenedores Reproducibles en Bioinformática**
 
-To learn more about Quarto websites visit <https://quarto.org/docs/websites>.
+![](https://docs.hpc.uwec.edu/images/software/apptainer-logo.png#only-light){fig-align="center" width="450"}
 
-```{r}
-1 + 1
-```
+## 🧩 ¿Qué es Apptainer?
+
+**Apptainer** (anteriormente conocido como **Singularity**) es una plataforma de contenedores diseñada específicamente para entornos científicos, de alto rendimiento y académicos. A diferencia de otras tecnologías de contenedores como Docker, Apptainer está optimizado para su uso en **servidores compartidos, clústeres HPC (High Performance Computing)** y sistemas donde los usuarios **no tienen privilegios de administrador (root)**.
+
+Su principal objetivo es **garantizar la portabilidad, reproducibilidad y seguridad** de los entornos de ejecución de software, permitiendo a investigadores y técnicos encapsular programas, dependencias, bibliotecas y configuraciones en un solo archivo de imagen (`.sif`) que puede ser ejecutado en cualquier máquina que tenga Apptainer instalado.
+
+### 🎯 Características clave
+
+-   ✅ **Reproducibilidad**: asegura que un análisis siempre se pueda ejecutar en las mismas condiciones.
+
+-   ✅ **Sin necesidad de root**: los usuarios pueden crear y ejecutar contenedores sin privilegios de administrador.
+
+-   ✅ **Compatible con Docker**: permite usar imágenes directamente desde Docker Hub o Biocontainers.
+
+-   ✅ **Ideal para HPC**: ampliamente adoptado en supercomputadoras y servidores académicos.
+
+-   ✅ **Imágenes portátiles**: los contenedores `.sif` son archivos únicos y compactos que puedes mover fácilmente entre sistemas.
+
+## 🔄 Diferencias con Docker
+
+![](https://www.chucksacademy.com/api/proxy/uploads/docker_logo_horizontal_e2fbe1af66.png){fig-align="center" width="350"}
+
+Aunque **Apptainer** y **Docker** son tecnologías de contenedores, están diseñadas para diferentes entornos y necesidades:
+
+| Característica                           | Docker                                       | Apptainer (antes Singularity)              |
+|-----------------------|-------------------------|------------------------|
+| Pensado para                             | Desarrolladores y despliegue de aplicaciones | Ciencia, HPC, bioinformática, académicos   |
+| Requiere root para ejecutar              | ✅ Sí                                        | ❌ No (funciona sin root)                  |
+| Soporte en HPC                           | ❌ Generalmente no está permitido            | ✅ Compatible y ampliamente usado          |
+| Imágenes portables                       | ❌ Dependen del demonio Docker               | ✅ Archivo único `.sif` fácil de compartir |
+| Seguridad                                | Aislado, pero con riesgo si mal configurado  | Diseñado con enfoque en seguridad en HPC   |
+| Instalación                              | Demonio + cliente                            | Binario sin demonio, ideal para servidores |
+| Integración con Slurm u otros schedulers | ❌ No nativa                                 | ✅ Sí, se integra fácilmente               |
+
+En resumen: **Docker es ideal para desarrollo**, pero **Apptainer es ideal para servidores y ciencia reproducible**.
+
+## 🧬 ¿Por qué usar contenedores en bioinformática?
+
+La bioinformática implica manejar herramientas complejas y diversas que:
+
+-   Tienen muchas **dependencias** (versiones específicas de librerías, lenguajes, compiladores...).
+
+-   Se usan en **diferentes sistemas operativos** (local, servidor, clúster).
+
+-   Cambian con el tiempo (actualizaciones que rompen flujos de trabajo).
+
+Los **contenedores** permiten encapsular un entorno completo (programas + dependencias + configuraciones) y asegurar que:
+
+-   🔁 **Los análisis sean reproducibles** (lo que corriste hoy funcionará igual en el futuro).
+
+-   💼 **Los proyectos sean portables** (puedes compartirlos sin preocuparte por el sistema del otro).
+
+-   🧪 **Los ambientes estén controlados** (evitas conflictos entre herramientas).
+
+-   🔧 **No necesitas permisos de administrador** para ejecutar programas complejos.
+
+## 📦 Casos comunes de uso en bioinformática
+
+1\. **Reproducibilidad de análisis**
+
+> Publicaste un artículo con un pipeline complejo. ¿Cómo asegurar que otro laboratorio pueda correrlo igual?.\
+> → Empaqueta todo en un `.sif` y comparte el contenedor.
+
+2\. **Manejo de dependencias complicadas**
+
+> Instalar una herramienta requiere versiones específicas de Python, Perl y BLAST.\
+> → Crea un contenedor con todo configurado correctamente.
+
+3\. **Uso en servidores y clusters HPC**
+
+> En servidores compartidos no tienes acceso `sudo`. Docker no está permitido.\
+> → Apptainer funciona sin root y se integra fácilmente con Slurm, PBS u otros gestores de recursos.
+
+4\. **Compartir entornos con colegas o estudiantes**
+
+> Das un curso o trabajas en colaboración.\
+> → Les compartes el contenedor `.sif` con todo listo para ejecutar.

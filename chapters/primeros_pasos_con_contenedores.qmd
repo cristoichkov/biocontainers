@@ -1,0 +1,80 @@
+---
+title: "Primeros pasos con contenedores"
+format: html
+---
+
+## 🔽 1. Descargar imágenes base
+
+Apptainer puede descargar imágenes desde Docker Hub, lo que permite aprovechar miles de imágenes preconstruidas de sistemas operativos y herramientas.
+
+#### 📥 Comando básico
+
+``` bash
+apptainer pull docker://ubuntu
+```
+
+Este comando descarga una imagen de **Ubuntu** desde Docker y la convierte en un archivo `.sif` (Singularity Image Format), por ejemplo: `ubuntu_latest.sif`.
+
+#### 🏷️ Descargar versiones específicas
+
+Puedes especificar una versión del sistema usando una etiqueta (`:versión`). Por ejemplo, para CentOS 7:
+
+``` bash
+apptainer pull docker://centos:7
+```
+
+Esto descargará y convertirá la imagen de CentOS 7 a un archivo `.sif`, que puedes ejecutar o convertir en sandbox.
+
+## 🧱 2. ¿Qué es un sandbox?
+
+Un **sandbox** en Apptainer es una forma de contenedor que se guarda como un **directorio editable** en lugar de un archivo `.sif`.
+
+-   Permite **entrar al contenedor y modificarlo**: instalar software, cambiar configuraciones, copiar archivos, etc.
+
+-   Es ideal para el **desarrollo interactivo** de contenedores antes de “empacarlos” como imágenes finales `.sif`.
+
+-   Internamente, contiene el árbol de directorios del sistema operativo base (como si fuera una instalación Linux real).
+
+## 🛠 3. Crear un contenedor en modo sandbox
+
+El modo **sandbox** te permite trabajar de forma editable con el contenedor, como si fuera una carpeta normal del sistema de archivos.
+
+#### 🔧 Comando para crear sandbox
+
+``` bash
+apptainer build --sandbox NOMBRE_DEL_DIRECTORIO IMAGEN_BASE.sif
+```
+
+📌 Ejemplo
+
+``` bash
+apptainer build --sandbox NBODY ubuntu_latest.sif
+```
+
+Esto crea un directorio llamado `NBODY/` con un sistema de archivos completo basado en Ubuntu el cual puedes modificar.
+
+## 💻 4. Explorar el contenedor de forma interactiva
+
+Puedes acceder al interior del contenedor sandbox usando una shell interactiva, lo que te permitirá navegar, instalar software y configurar el entorno.
+
+🚪 Entrar al contenedor
+
+``` bash
+apptainer shell NBODY/
+```
+
+Una vez dentro, verás el prompt de Apptainer:
+
+``` bash
+Apptainer>
+```
+
+Puedes ejecutar comandos como si estuvieras en un sistema Linux normal.
+
+🔚 Salir del contenedor
+
+Para salir, simplemente escribe:
+
+``` bash
+exit
+```

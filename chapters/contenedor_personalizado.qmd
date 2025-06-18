@@ -1,0 +1,180 @@
+---
+title: "Construcción de un contenedor personalizado"
+format: html
+---
+
+Una vez que has creado un contenedor en formato sandbox, puedes personalizarlo instalando aplicaciones, configurando entornos de trabajo, y dejando todo listo para la ejecución de tus análisis bioinformáticos.
+
+# 🧬 Crear un contenedor Apptainer de MrBayes con soporte para MPI
+
+En esta sección aprenderás a instalar **MrBayes** con soporte para **paralelización mediante MPI** (Message Passing Interface), permitiendo ejecutar análisis bayesianos para inferencia filogenética en múltiples núcleos.
+
+## 📥 1. Descargar imagen base de Ubuntu
+
+``` bash
+apptainer pull docker://ubuntu:22.04
+```
+
+Esto generará el archivo:
+
+``` bash
+ubuntu_22.04.sif
+```
+
+## 📦 2. Crear un sandbox editable desde la imagen
+
+``` bash
+apptainer build --sandbox mrbayes_mpi ubuntu_22.04.sif
+```
+
+## 🧑 🔧 3. Entrar al contenedor en modo escritura y root simulado
+
+``` bash
+apptainer shell --writable --fakeroot --pwd / mrbayes_mpi
+```
+
+Con `--writable`, puedes: instalar paquetes, modificar archivos de configuración, compilar software y crear nuevos directorios o eliminar archivos.
+
+Con `--fakeroot`, puedes:
+
+-   Simula privilegios de administrador **solo dentro del contenedor**.
+
+-   Te permite usar comandos como `apt install`, `make install`, etc.
+
+-   No afecta al sistema anfitrión y no requiere permisos reales de root.
+
+Con `--pwd`, puedes colocarte directamente en / dentro del contenedor, aunque tu `$HOME` siga estando montado en `/root`.
+
+> ⚠️ Puede aparecer esta advertencia:
+
+```         
+WARNING: Skipping mount /etc/localtime [binds]: /etc/localtime doesn't exist in container
+```
+
+> Si aparece el warning `Skipping mount /etc/localtime`, lo corregiremos más adelante.
+
+## 🌐 4. Configurar idioma y zona horaria
+
+A\) Configurar localización (`locale`)
+
+``` bash
+apt update
+apt install -y locales
+locale-gen en_US.UTF-8
+update-locale LANG=en_US.UTF-8
+export LANG=en_US.UTF-8
+export LC_ALL=en_US.UTF-8
+```
+
+B\) Corregir warning de `/etc/localtime`
+
+``` bash
+apt install -y tzdata
+ln -sf /usr/share/zoneinfo/Etc/UTC /etc/localtime
+```
+
+## ⚙️ 5. Instalar dependencias del sistema
+
+``` bash
+apt install -y build-essential make pkg-config git wget curl \
+latexmk texlive-latex-base texlive-fonts-recommended \
+texlive-fonts-extra texlive-latex-extra \
+openmpi-bin openmpi-common openmpi-doc libopenmpi-dev
+```
+
+## 🔬 6. Descargar y compilar MrBayes con soporte MPI
+
+``` bash
+cd /opt
+git clone https://github.com/NBISweden/MrBayes.git
+cd MrBayes
+./configure --with-mpi
+make -j$(nproc)
+make install
+```
+
+## 🚪 7. Salir del contenedor
+
+``` bash
+exit
+```
+
+## 📦 8. Empaquetar el sandbox como archivo `.sif` (opcional)
+
+Una vez que has terminado de configurar y personalizar tu contenedor en formato sandbox, puedes **empaquetarlo como un archivo `.sif`** para facilitar su distribución y ejecución.
+
+> ⚠️ Para construir un archivo `.sif` es necesario tener privilegios de administrador (`sudo`), ya que el proceso de empaquetado requiere montar ciertos recursos del sistema.
+
+``` bash
+sudo apptainer build mrbayes_mpi.sif mrbayes_mpi
+```
+
+### 🚀 9. Ejecutar MrBayes con MPI desde el contenedor `.sif`
+
+Supongamos que ya lograste generar el archivo `mrbayes_mpi.sif` y tienes tu archivo de análisis `analysis.nex` ubicado en:
+
+``` bash
+/home/usuario/analisis/data/analysis.nex
+```
+
+Antes de correr MrBayes, puedes inspeccionar el contenido interno del contenedor con:
+
+``` bash
+apptainer exec mrbayes_mpi.sif ls
+```
+
+Esto te mostrará el contenido del contenedor, generalmente ubicado bajo la ruta `/root/`, que es el equivalente al `$HOME`de tu usuario.
+
+#### 📁 Acceder a tus archivos de datos externos
+
+Como tus datos (`analysis.nex`) están fuera del contenedor, debes decirle a Apptainer que los "mapee" (monte) al interior del contenedor.
+
+Para ejecutar MrBayes usando 8 núcleos y especificar la ruta al archivo `.nex` dentro del contenedor, utiliza:
+
+``` bash
+apptainer exec mrbayes_mpi.sif mpirun -np 8 mb analisis/data/analysis.nex
+```
+
+💡 Puedes ajustar el número de núcleos (`-np 8`) según los recursos disponibles.
+
+## 💻 10. Ejecutar MrBayes en segundo plano
+
+Para ejecutar MrBayes con MPI dentro del contenedor `.sif` y dejarlo trabajando en segundo plano, usa el siguiente comando con redirección.
+
+``` bash
+apptainer exec mrbayes_mpi.sif mpirun -np 8 mb analisis/data/analysis.nex > mrbayes.log 2>&1 &
+```
+
+✅ Explicación:
+
+-   `>` redirige la salida estándar a un archivo (`mrbayes.log`).
+
+-   `2>&1` redirige también los errores al mismo archivo.
+
+-   `&` al final del comando envía el proceso al background.
+
+📋 Verificar si sigue corriendo
+
+``` bash
+ps aux | grep mb
+```
+
+🧼 Detenerlo si es necesario
+
+Si conoces el número de proceso (PID):
+
+``` bash
+kill PID
+```
+
+✅ Para **ver el archivo `.log` en tiempo real** mientras se está ejecutando el análisis, puedes usar:
+
+``` bash
+tail -f mrbayes.log
+```
+
+Cuando hayas terminado de monitorear, puedes salir de `tail` con:
+
+``` bash
+Ctrl + C
+```

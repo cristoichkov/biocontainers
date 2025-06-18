@@ -1,19 +1,28 @@
 project:
-  type: website
+  type: book
 
-website:
-  title: "biocontainers"
-  navbar:
-    left:
-      - href: index.qmd
-        text: Home
-      - about.qmd
+book:
+  title: "Apptainer"
+  author: "Cristian Cervantes"
+  chapters:
+    - index.qmd
+    - chapters/install.qmd
+    - chapters/primeros_pasos_con_contenedores.qmd
+    - chapters/contenedor_personalizado.qmd
+
 
 format:
   html:
-    theme: cosmo
-    css: styles.css
+    theme: litera
+    css: styles/custom.css
     toc: true
+    toc-depth: 2
+    number-sections: false  # Desactiva la numeración de capítulos y secciones
 
 editor: visual
+
+publish:
+  gh-pages:
+    branch: gh-pages
+    dir: _site
 
