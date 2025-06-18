@@ -1,0 +1,242 @@
+[
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Apptainer",
+    "section": "",
+    "text": "Tutorial: Uso de Apptainer para Contenedores Reproducibles en Bioinformática",
+    "crumbs": [
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Introducción a Apptainer</span>"
+    ]
+  },
+  {
+    "objectID": "index.html#qué-es-apptainer",
+    "href": "index.html#qué-es-apptainer",
+    "title": "Apptainer",
+    "section": "🧩 ¿Qué es Apptainer?",
+    "text": "🧩 ¿Qué es Apptainer?\nApptainer (anteriormente conocido como Singularity) es una plataforma de contenedores diseñada específicamente para entornos científicos, de alto rendimiento y académicos. A diferencia de otras tecnologías de contenedores como Docker, Apptainer está optimizado para su uso en servidores compartidos, clústeres HPC (High Performance Computing) y sistemas donde los usuarios no tienen privilegios de administrador (root).\nSu principal objetivo es garantizar la portabilidad, reproducibilidad y seguridad de los entornos de ejecución de software, permitiendo a investigadores y técnicos encapsular programas, dependencias, bibliotecas y configuraciones en un solo archivo de imagen (.sif) que puede ser ejecutado en cualquier máquina que tenga Apptainer instalado.\n\n🎯 Características clave\n\n✅ Reproducibilidad: asegura que un análisis siempre se pueda ejecutar en las mismas condiciones.\n✅ Sin necesidad de root: los usuarios pueden crear y ejecutar contenedores sin privilegios de administrador.\n✅ Compatible con Docker: permite usar imágenes directamente desde Docker Hub o Biocontainers.\n✅ Ideal para HPC: ampliamente adoptado en supercomputadoras y servidores académicos.\n✅ Imágenes portátiles: los contenedores .sif son archivos únicos y compactos que puedes mover fácilmente entre sistemas.",
+    "crumbs": [
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Introducción a Apptainer</span>"
+    ]
+  },
+  {
+    "objectID": "index.html#diferencias-con-docker",
+    "href": "index.html#diferencias-con-docker",
+    "title": "Apptainer",
+    "section": "🔄 Diferencias con Docker",
+    "text": "🔄 Diferencias con Docker\n\n\n\n\n\nAunque Apptainer y Docker son tecnologías de contenedores, están diseñadas para diferentes entornos y necesidades:\n\n\n\n\n\n\n\n\nCaracterística\nDocker\nApptainer (antes Singularity)\n\n\n\n\nPensado para\nDesarrolladores y despliegue de aplicaciones\nCiencia, HPC, bioinformática, académicos\n\n\nRequiere root para ejecutar\n✅ Sí\n❌ No (funciona sin root)\n\n\nSoporte en HPC\n❌ Generalmente no está permitido\n✅ Compatible y ampliamente usado\n\n\nImágenes portables\n❌ Dependen del demonio Docker\n✅ Archivo único .sif fácil de compartir\n\n\nSeguridad\nAislado, pero con riesgo si mal configurado\nDiseñado con enfoque en seguridad en HPC\n\n\nInstalación\nDemonio + cliente\nBinario sin demonio, ideal para servidores\n\n\nIntegración con Slurm u otros schedulers\n❌ No nativa\n✅ Sí, se integra fácilmente\n\n\n\nEn resumen: Docker es ideal para desarrollo, pero Apptainer es ideal para servidores y ciencia reproducible.",
+    "crumbs": [
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Introducción a Apptainer</span>"
+    ]
+  },
+  {
+    "objectID": "index.html#por-qué-usar-contenedores-en-bioinformática",
+    "href": "index.html#por-qué-usar-contenedores-en-bioinformática",
+    "title": "Apptainer",
+    "section": "🧬 ¿Por qué usar contenedores en bioinformática?",
+    "text": "🧬 ¿Por qué usar contenedores en bioinformática?\nLa bioinformática implica manejar herramientas complejas y diversas que:\n\nTienen muchas dependencias (versiones específicas de librerías, lenguajes, compiladores…).\nSe usan en diferentes sistemas operativos (local, servidor, clúster).\nCambian con el tiempo (actualizaciones que rompen flujos de trabajo).\n\nLos contenedores permiten encapsular un entorno completo (programas + dependencias + configuraciones) y asegurar que:\n\n🔁 Los análisis sean reproducibles (lo que corriste hoy funcionará igual en el futuro).\n💼 Los proyectos sean portables (puedes compartirlos sin preocuparte por el sistema del otro).\n🧪 Los ambientes estén controlados (evitas conflictos entre herramientas).\n🔧 No necesitas permisos de administrador para ejecutar programas complejos.",
+    "crumbs": [
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Introducción a Apptainer</span>"
+    ]
+  },
+  {
+    "objectID": "index.html#casos-comunes-de-uso-en-bioinformática",
+    "href": "index.html#casos-comunes-de-uso-en-bioinformática",
+    "title": "Apptainer",
+    "section": "📦 Casos comunes de uso en bioinformática",
+    "text": "📦 Casos comunes de uso en bioinformática\n1. Reproducibilidad de análisis\n\nPublicaste un artículo con un pipeline complejo. ¿Cómo asegurar que otro laboratorio pueda correrlo igual?.\n→ Empaqueta todo en un .sif y comparte el contenedor.\n\n2. Manejo de dependencias complicadas\n\nInstalar una herramienta requiere versiones específicas de Python, Perl y BLAST.\n→ Crea un contenedor con todo configurado correctamente.\n\n3. Uso en servidores y clusters HPC\n\nEn servidores compartidos no tienes acceso sudo. Docker no está permitido.\n→ Apptainer funciona sin root y se integra fácilmente con Slurm, PBS u otros gestores de recursos.\n\n4. Compartir entornos con colegas o estudiantes\n\nDas un curso o trabajas en colaboración.\n→ Les compartes el contenedor .sif con todo listo para ejecutar.",
+    "crumbs": [
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Introducción a Apptainer</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/install.html",
+    "href": "chapters/install.html",
+    "title": "Instalación de Apptainer",
+    "section": "",
+    "text": "🐧 ¿Por qué Apptainer solo funciona en Linux?\nApptainer está diseñado exclusivamente para sistemas basados en Linux, y esto no es una limitación arbitraria, sino una consecuencia de su arquitectura y propósito.",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Instalación de Apptainer</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/install.html#por-qué-apptainer-solo-funciona-en-linux",
+    "href": "chapters/install.html#por-qué-apptainer-solo-funciona-en-linux",
+    "title": "Instalación de Apptainer",
+    "section": "",
+    "text": "🔧 Apptainer se basa en características del kernel de Linux\nApptainer aprovecha funciones propias del kernel de Linux para crear contenedores ligeros y seguros. Algunas de estas funciones son:\n\nNamespaces: permiten aislar procesos, archivos, red, usuarios y otros recursos del sistema.\nCgroups (control groups): gestionan el uso de recursos como CPU y memoria.\nMount namespaces: controlan qué archivos y carpetas ve un contenedor.\nOverlayFS: sistema de archivos usado para capas dentro de contenedores.\n\nEstas tecnologías no existen nativamente en Windows ni macOS, por eso Apptainer no puede ejecutarse directamente en esos sistemas.\n\n\n✅ ¿Entonces qué hacer en Windows o macOS?\n\nEn Windows: puedes usar WSL2 (Subsistema de Windows para Linux).\nEn macOS y Windows: puedes usar máquinas virtuales con Linux (VirtualBox, UTM, VMware…).",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Instalación de Apptainer</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/install.html#instalación-de-apptainer-en-ubuntu-22.04-o-superior",
+    "href": "chapters/install.html#instalación-de-apptainer-en-ubuntu-22.04-o-superior",
+    "title": "Instalación de Apptainer",
+    "section": "Instalación de Apptainer en Ubuntu (22.04 o superior)",
+    "text": "Instalación de Apptainer en Ubuntu (22.04 o superior)\n\n🔧 Requisitos previos\n\n\nAntes de instalar Apptainer, asegúrate de tener:\n\nUn sistema Linux (Ubuntu recomendado).\nAcceso a una cuenta con privilegios sudo.\nmake, gcc, git y otras herramientas básicas de compilación.\n\n\n\n✅ Opción 1: Instalación rápida desde paquetes\nDesde 2024, Apptainer está disponible en los repositorios de Ubuntu. Puedes instalarlo con:\nsudo apt update\nsudo apt install apptainer\nVerifica la instalación:\napptainer --version\n\n\n✅ Opción 2: Instalación manual (última versión estable)\nSi deseas la versión más reciente, puedes compilar desde el código fuente.\n1. Instalar dependencias\nsudo apt update\nsudo apt install -y build-essential \\\n  libseccomp-dev pkg-config squashfs-tools cryptsetup curl git\n2. Descargar la última versión de Apptainer\nexport VERSION=1.2.5  # o la versión que necesites\nwget https://github.com/apptainer/apptainer/releases/download/v$VERSION/apptainer-$VERSION.tar.gz\ntar -xzf apptainer-$VERSION.tar.gz\ncd apptainer-$VERSION\n3. Compilar e instalar\n./mconfig\nmake -C builddir\nsudo make -C builddir install\nVerifica la instalación:\napptainer --version",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Instalación de Apptainer</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/install.html#y-en-otras-distribuciones",
+    "href": "chapters/install.html#y-en-otras-distribuciones",
+    "title": "Instalación de Apptainer",
+    "section": "🧪 ¿Y en otras distribuciones?",
+    "text": "🧪 ¿Y en otras distribuciones?\n\nCentOS/RHEL: Usa el gestor dnf o yum para instalar dependencias, luego sigue el proceso de compilación.\nArch Linux: Puedes usar yay -S apptainer desde AUR.\nWSL2 (Windows): Instala Ubuntu desde Microsoft Store, y sigue estos mismos pasos.",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Instalación de Apptainer</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/primeros_pasos_con_contenedores.html",
+    "href": "chapters/primeros_pasos_con_contenedores.html",
+    "title": "Primeros pasos con contenedores",
+    "section": "",
+    "text": "🔽 1. Descargar imágenes base\nApptainer puede descargar imágenes desde Docker Hub, lo que permite aprovechar miles de imágenes preconstruidas de sistemas operativos y herramientas.",
+    "crumbs": [
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Primeros pasos con contenedores</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/primeros_pasos_con_contenedores.html#descargar-imágenes-base",
+    "href": "chapters/primeros_pasos_con_contenedores.html#descargar-imágenes-base",
+    "title": "Primeros pasos con contenedores",
+    "section": "",
+    "text": "📥 Comando básico\napptainer pull docker://ubuntu\nEste comando descarga una imagen de Ubuntu desde Docker y la convierte en un archivo .sif (Singularity Image Format), por ejemplo: ubuntu_latest.sif.\n\n\n🏷️ Descargar versiones específicas\nPuedes especificar una versión del sistema usando una etiqueta (:versión). Por ejemplo, para CentOS 7:\napptainer pull docker://centos:7\nEsto descargará y convertirá la imagen de CentOS 7 a un archivo .sif, que puedes ejecutar o convertir en sandbox.",
+    "crumbs": [
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Primeros pasos con contenedores</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/primeros_pasos_con_contenedores.html#qué-es-un-sandbox",
+    "href": "chapters/primeros_pasos_con_contenedores.html#qué-es-un-sandbox",
+    "title": "Primeros pasos con contenedores",
+    "section": "🧱 2. ¿Qué es un sandbox?",
+    "text": "🧱 2. ¿Qué es un sandbox?\nUn sandbox en Apptainer es una forma de contenedor que se guarda como un directorio editable en lugar de un archivo .sif.\n\nPermite entrar al contenedor y modificarlo: instalar software, cambiar configuraciones, copiar archivos, etc.\nEs ideal para el desarrollo interactivo de contenedores antes de “empacarlos” como imágenes finales .sif.\nInternamente, contiene el árbol de directorios del sistema operativo base (como si fuera una instalación Linux real).",
+    "crumbs": [
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Primeros pasos con contenedores</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/primeros_pasos_con_contenedores.html#crear-un-contenedor-en-modo-sandbox",
+    "href": "chapters/primeros_pasos_con_contenedores.html#crear-un-contenedor-en-modo-sandbox",
+    "title": "Primeros pasos con contenedores",
+    "section": "🛠 3. Crear un contenedor en modo sandbox",
+    "text": "🛠 3. Crear un contenedor en modo sandbox\nEl modo sandbox te permite trabajar de forma editable con el contenedor, como si fuera una carpeta normal del sistema de archivos.\n\n🔧 Comando para crear sandbox\napptainer build --sandbox NOMBRE_DEL_DIRECTORIO IMAGEN_BASE.sif\n📌 Ejemplo\napptainer build --sandbox NBODY ubuntu_latest.sif\nEsto crea un directorio llamado NBODY/ con un sistema de archivos completo basado en Ubuntu el cual puedes modificar.",
+    "crumbs": [
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Primeros pasos con contenedores</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/primeros_pasos_con_contenedores.html#explorar-el-contenedor-de-forma-interactiva",
+    "href": "chapters/primeros_pasos_con_contenedores.html#explorar-el-contenedor-de-forma-interactiva",
+    "title": "Primeros pasos con contenedores",
+    "section": "💻 4. Explorar el contenedor de forma interactiva",
+    "text": "💻 4. Explorar el contenedor de forma interactiva\nPuedes acceder al interior del contenedor sandbox usando una shell interactiva, lo que te permitirá navegar, instalar software y configurar el entorno.\n🚪 Entrar al contenedor\napptainer shell NBODY/\nUna vez dentro, verás el prompt de Apptainer:\nApptainer&gt;\nPuedes ejecutar comandos como si estuvieras en un sistema Linux normal.\n🔚 Salir del contenedor\nPara salir, simplemente escribe:\nexit",
+    "crumbs": [
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Primeros pasos con contenedores</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/contenedor_personalizado.html",
+    "href": "chapters/contenedor_personalizado.html",
+    "title": "Construcción de un contenedor personalizado",
+    "section": "",
+    "text": "🧬 Crear un contenedor Apptainer de MrBayes con soporte para MPI\nUna vez que has creado un contenedor en formato sandbox, puedes personalizarlo instalando aplicaciones, configurando entornos de trabajo, y dejando todo listo para la ejecución de tus análisis bioinformáticos.\nEn esta sección aprenderás a instalar MrBayes con soporte para paralelización mediante MPI (Message Passing Interface), permitiendo ejecutar análisis bayesianos para inferencia filogenética en múltiples núcleos.",
+    "crumbs": [
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Construcción de un contenedor personalizado</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/contenedor_personalizado.html#descargar-imagen-base-de-ubuntu",
+    "href": "chapters/contenedor_personalizado.html#descargar-imagen-base-de-ubuntu",
+    "title": "Construcción de un contenedor personalizado",
+    "section": "📥 1. Descargar imagen base de Ubuntu",
+    "text": "📥 1. Descargar imagen base de Ubuntu\napptainer pull docker://ubuntu:22.04\nEsto generará el archivo:\nubuntu_22.04.sif",
+    "crumbs": [
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Construcción de un contenedor personalizado</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/contenedor_personalizado.html#crear-un-sandbox-editable-desde-la-imagen",
+    "href": "chapters/contenedor_personalizado.html#crear-un-sandbox-editable-desde-la-imagen",
+    "title": "Construcción de un contenedor personalizado",
+    "section": "📦 2. Crear un sandbox editable desde la imagen",
+    "text": "📦 2. Crear un sandbox editable desde la imagen\napptainer build --sandbox mrbayes_mpi ubuntu_22.04.sif",
+    "crumbs": [
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Construcción de un contenedor personalizado</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/contenedor_personalizado.html#entrar-al-contenedor-en-modo-escritura-y-root-simulado",
+    "href": "chapters/contenedor_personalizado.html#entrar-al-contenedor-en-modo-escritura-y-root-simulado",
+    "title": "Construcción de un contenedor personalizado",
+    "section": "🧑 🔧 3. Entrar al contenedor en modo escritura y root simulado",
+    "text": "🧑 🔧 3. Entrar al contenedor en modo escritura y root simulado\napptainer shell --writable --fakeroot --pwd / mrbayes_mpi\nCon --writable, puedes: instalar paquetes, modificar archivos de configuración, compilar software y crear nuevos directorios o eliminar archivos.\nCon --fakeroot, puedes:\n\nSimula privilegios de administrador solo dentro del contenedor.\nTe permite usar comandos como apt install, make install, etc.\nNo afecta al sistema anfitrión y no requiere permisos reales de root.\n\nCon --pwd, puedes colocarte directamente en / dentro del contenedor, aunque tu $HOME siga estando montado en /root.\n\n⚠️ Puede aparecer esta advertencia:\n\nWARNING: Skipping mount /etc/localtime [binds]: /etc/localtime doesn't exist in container\n\nSi aparece el warning Skipping mount /etc/localtime, lo corregiremos más adelante.",
+    "crumbs": [
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Construcción de un contenedor personalizado</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/contenedor_personalizado.html#configurar-idioma-y-zona-horaria",
+    "href": "chapters/contenedor_personalizado.html#configurar-idioma-y-zona-horaria",
+    "title": "Construcción de un contenedor personalizado",
+    "section": "🌐 4. Configurar idioma y zona horaria",
+    "text": "🌐 4. Configurar idioma y zona horaria\nA) Configurar localización (locale)\napt update\napt install -y locales\nlocale-gen en_US.UTF-8\nupdate-locale LANG=en_US.UTF-8\nexport LANG=en_US.UTF-8\nexport LC_ALL=en_US.UTF-8\nB) Corregir warning de /etc/localtime\napt install -y tzdata\nln -sf /usr/share/zoneinfo/Etc/UTC /etc/localtime",
+    "crumbs": [
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Construcción de un contenedor personalizado</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/contenedor_personalizado.html#instalar-dependencias-del-sistema",
+    "href": "chapters/contenedor_personalizado.html#instalar-dependencias-del-sistema",
+    "title": "Construcción de un contenedor personalizado",
+    "section": "⚙️ 5. Instalar dependencias del sistema",
+    "text": "⚙️ 5. Instalar dependencias del sistema\napt install -y build-essential make pkg-config git wget curl \\\nlatexmk texlive-latex-base texlive-fonts-recommended \\\ntexlive-fonts-extra texlive-latex-extra \\\nopenmpi-bin openmpi-common openmpi-doc libopenmpi-dev",
+    "crumbs": [
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Construcción de un contenedor personalizado</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/contenedor_personalizado.html#descargar-y-compilar-mrbayes-con-soporte-mpi",
+    "href": "chapters/contenedor_personalizado.html#descargar-y-compilar-mrbayes-con-soporte-mpi",
+    "title": "Construcción de un contenedor personalizado",
+    "section": "🔬 6. Descargar y compilar MrBayes con soporte MPI",
+    "text": "🔬 6. Descargar y compilar MrBayes con soporte MPI\ncd /opt\ngit clone https://github.com/NBISweden/MrBayes.git\ncd MrBayes\n./configure --with-mpi\nmake -j$(nproc)\nmake install",
+    "crumbs": [
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Construcción de un contenedor personalizado</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/contenedor_personalizado.html#salir-del-contenedor",
+    "href": "chapters/contenedor_personalizado.html#salir-del-contenedor",
+    "title": "Construcción de un contenedor personalizado",
+    "section": "🚪 7. Salir del contenedor",
+    "text": "🚪 7. Salir del contenedor\nexit",
+    "crumbs": [
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Construcción de un contenedor personalizado</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/contenedor_personalizado.html#empaquetar-el-sandbox-como-archivo-.sif-opcional",
+    "href": "chapters/contenedor_personalizado.html#empaquetar-el-sandbox-como-archivo-.sif-opcional",
+    "title": "Construcción de un contenedor personalizado",
+    "section": "📦 8. Empaquetar el sandbox como archivo .sif (opcional)",
+    "text": "📦 8. Empaquetar el sandbox como archivo .sif (opcional)\nUna vez que has terminado de configurar y personalizar tu contenedor en formato sandbox, puedes empaquetarlo como un archivo .sif para facilitar su distribución y ejecución.\n\n⚠️ Para construir un archivo .sif es necesario tener privilegios de administrador (sudo), ya que el proceso de empaquetado requiere montar ciertos recursos del sistema.\n\nsudo apptainer build mrbayes_mpi.sif mrbayes_mpi\n\n🚀 9. Ejecutar MrBayes con MPI desde el contenedor .sif\nSupongamos que ya lograste generar el archivo mrbayes_mpi.sif y tienes tu archivo de análisis analysis.nex ubicado en:\n/home/usuario/analisis/data/analysis.nex\nAntes de correr MrBayes, puedes inspeccionar el contenido interno del contenedor con:\napptainer exec mrbayes_mpi.sif ls\nEsto te mostrará el contenido del contenedor, generalmente ubicado bajo la ruta /root/, que es el equivalente al $HOMEde tu usuario.\n\n📁 Acceder a tus archivos de datos externos\nComo tus datos (analysis.nex) están fuera del contenedor, debes decirle a Apptainer que los “mapee” (monte) al interior del contenedor.\nPara ejecutar MrBayes usando 8 núcleos y especificar la ruta al archivo .nex dentro del contenedor, utiliza:\napptainer exec mrbayes_mpi.sif mpirun -np 8 mb analisis/data/analysis.nex\n💡 Puedes ajustar el número de núcleos (-np 8) según los recursos disponibles.",
+    "crumbs": [
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Construcción de un contenedor personalizado</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/contenedor_personalizado.html#ejecutar-mrbayes-en-segundo-plano",
+    "href": "chapters/contenedor_personalizado.html#ejecutar-mrbayes-en-segundo-plano",
+    "title": "Construcción de un contenedor personalizado",
+    "section": "💻 10. Ejecutar MrBayes en segundo plano",
+    "text": "💻 10. Ejecutar MrBayes en segundo plano\nPara ejecutar MrBayes con MPI dentro del contenedor .sif y dejarlo trabajando en segundo plano, usa el siguiente comando con redirección.\napptainer exec mrbayes_mpi.sif mpirun -np 8 mb analisis/data/analysis.nex &gt; mrbayes.log 2&gt;&1 &\n✅ Explicación:\n\n&gt; redirige la salida estándar a un archivo (mrbayes.log).\n2&gt;&1 redirige también los errores al mismo archivo.\n& al final del comando envía el proceso al background.\n\n📋 Verificar si sigue corriendo\nps aux | grep mb\n🧼 Detenerlo si es necesario\nSi conoces el número de proceso (PID):\nkill PID\n✅ Para ver el archivo .log en tiempo real mientras se está ejecutando el análisis, puedes usar:\ntail -f mrbayes.log\nCuando hayas terminado de monitorear, puedes salir de tail con:\nCtrl + C",
+    "crumbs": [
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Construcción de un contenedor personalizado</span>"
+    ]
+  }
+]
