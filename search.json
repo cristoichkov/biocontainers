@@ -238,5 +238,65 @@
     "crumbs": [
       "<span class='chapter-number'>4</span>  <span class='chapter-title'>Construcción de un contenedor personalizado</span>"
     ]
+  },
+  {
+    "objectID": "chapters/archivo_de_definicion.html",
+    "href": "chapters/archivo_de_definicion.html",
+    "title": "Construcción de un contenedor a partir de un archivo de definición (.def)",
+    "section": "",
+    "text": "⚙️ Crear un contenedor .sif con soporte GPU usando un archivo .def",
+    "crumbs": [
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Construcción de un contenedor a partir de un archivo de definición (.def)</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/archivo_de_definicion.html#archivo-de-definición-mrbayes_gpu.def",
+    "href": "chapters/archivo_de_definicion.html#archivo-de-definición-mrbayes_gpu.def",
+    "title": "Construcción de un contenedor a partir de un archivo de definición (.def)",
+    "section": "📄 Archivo de definición: mrbayes_gpu.def",
+    "text": "📄 Archivo de definición: mrbayes_gpu.def\nEste archivo contiene instrucciones para:\n\nInstalar herramientas básicas de desarrollo (g++, cmake, make, etc.).\nDescargar e instalar la biblioteca BEAGLE desde su repositorio oficial.\nCompilar MrBayes desde su rama develop con soporte para MPI y BEAGLE.\nConfigurar variables de entorno para garantizar compatibilidad y desempeño.\nIncluir gpustat (opcional) para monitorear uso de GPU dentro del contenedor.",
+    "crumbs": [
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Construcción de un contenedor a partir de un archivo de definición (.def)</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/archivo_de_definicion.html#estructura-y-explicación-de-mrbayes_gpu.def",
+    "href": "chapters/archivo_de_definicion.html#estructura-y-explicación-de-mrbayes_gpu.def",
+    "title": "Construcción de un contenedor a partir de un archivo de definición (.def)",
+    "section": "🧱 Estructura y explicación de mrbayes_gpu.def",
+    "text": "🧱 Estructura y explicación de mrbayes_gpu.def\n# === Apptainer definition file para MrBayes + BEAGLE + GPU ===\n\n# Indica que se usará una imagen de Docker como base\nBootstrap: docker\n# Imagen base: Ubuntu 22.04 con CUDA 12.2 (soporte GPU)\nFrom: nvidia/cuda:12.2.0-devel-ubuntu22.04\n\n# === Variables de entorno persistentes dentro del contenedor ===\n%environment\n    # Configuración regional básica\n    export LANG=C.UTF-8\n    export LC_ALL=C.UTF-8\n\n    # Asegura que se encuentren las bibliotecas instaladas en /usr/local/lib\n    export LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH\n    export PKG_CONFIG_PATH=/usr/lib/pkgconfig:$PKG_CONFIG_PATH\n\n# === Instrucciones para construir el contenedor ===\n%post\n    # Evita prompts interactivos al instalar paquetes\n    export DEBIAN_FRONTEND=noninteractive\n\n    # Actualiza paquetes e instala herramientas de compilación y utilidades básicas\n    apt update && apt install -y \\\n        g++ \\\n        git \\\n        make \\\n        cmake \\\n        automake \\\n        wget \\\n        nano \\\n        libopenmpi-dev \\\n        python3 \\\n        python3-pip \\\n        curl\n\n    # (Opcional) Instala gpustat para monitorear la GPU dentro del contenedor\n    pip3 install gpustat\n\n    # === Instalación de la biblioteca BEAGLE ===\n    cd /\n    # Clona el repositorio oficial de BEAGLE (última versión)\n    git clone --depth=1 https://github.com/beagle-dev/beagle-lib.git\n    cd beagle-lib\n    mkdir build\n    cd build\n\n    # Compila BEAGLE sin soporte JNI ni OpenCL (solo GPU vía CUDA)\n    cmake -DBUILD_JNI=OFF -DBUILD_OPENCL=OFF ..\n    make\n    make install\n\n    # Asegura que las rutas a BEAGLE estén disponibles\n    export LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH\n    export PKG_CONFIG_PATH=/usr/lib/pkgconfig:$PKG_CONFIG_PATH\n\n    # === Instalación de MrBayes desde la rama 'develop' ===\n    cd /\n    # Clona la rama de desarrollo (última versión activa)\n    git clone --depth=1 --branch=develop https://github.com/NBISweden/MrBayes.git\n    cd MrBayes\n\n    # Configura MrBayes con soporte para MPI y BEAGLE\n    ./configure --with-mpi --with-beagle=/usr/local\n\n    # Compila e instala MrBayes\n    make\n    make install\n\n# === Comando por defecto al ejecutar el contenedor con 'run' ===\n%runscript\n    echo \"Contenedor MrBayes con BEAGLE y GPU listo\"\n    # Ejecuta cualquier comando que se pase al contenedor\n    exec \"$@\"\n\n🔹 From: — Imagen base\nFrom: nvidia/cuda:12.2.0-devel-ubuntu22.04\nIndica la imagen base de Docker sobre la que se construirá el contenedor. En este caso:\n\nUbuntu 22.04 como sistema operativo\nCUDA 12.2 preinstalado, necesario para usar aceleración por GPU.\n\n\n\n🔹 %environment — Variables de entorno persistentes\n%environment     export LANG=C.UTF-8     export LC_ALL=C.UTF-8     export LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH     export PKG_CONFIG_PATH=/usr/lib/pkgconfig:$PKG_CONFIG_PATH\n\nEsta sección define variables de entorno que estarán disponibles cada vez que el contenedor se ejecute (shell, exec, run, etc.).\nEs útil para asegurarte de que programas como MrBayes encuentren las librerías necesarias sin que el usuario tenga que configurar nada.\n\n\n¿Qué hacen esas variables?\n\nLANG y LC_ALL: Configuran la codificación del sistema (evita errores de caracteres).\nLD_LIBRARY_PATH: Le dice al sistema dónde buscar bibliotecas compartidas al ejecutar programas.\nPKG_CONFIG_PATH: Indica dónde buscar archivos .pc que describen cómo compilar y vincular bibliotecas.\n\n\n\n\n🔹 %post — Instrucciones para construir el contenedor\n%post\n\nEsta sección se ejecuta durante la construcción del contenedor (build).\nAquí se instalan paquetes, descargan programas, compilan y configuran los entornos de ejecución.\n\nSecciones destacadas dentro de %post:\n\nPrevenir prompts interactivos:\nexport DEBIAN_FRONTEND=noninteractive\nAsí apt no pedirá confirmaciones durante la instalación.\nInstalar dependencias:\napt update && apt install -y ...\nSe instalan herramientas de compilación, Python, MPI, etc.\nInstalar software adicional:\n\ngpustat: Monitorea el uso de GPU (opcional).\nBEAGLE: Librería para acelerar análisis filogenéticos.\nMrBayes: Se descarga, configura y compila con soporte para MPI y BEAGLE.\n\nAjustes adicionales al entorno:\nSe vuelven a declarar variables como LD_LIBRARY_PATH para asegurar que las rutas estén accesibles durante compilación.\n\n\n\n🔹 %runscript — Comando por defecto\n%runscript     echo \"Contenedor MrBayes con BEAGLE y GPU listo\"     exec \"$@\"\n\nEsta sección define qué pasará si alguien usa apptainer run archivo.sif.\nAquí se imprime un mensaje y luego se ejecuta cualquier comando pasado al contenedor (exec \"$@\").\n\n\nSi no incluyeras esta sección, el contenedor no sabría qué hacer por defecto al ser ejecutado con run.",
+    "crumbs": [
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Construcción de un contenedor a partir de un archivo de definición (.def)</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/archivo_de_definicion.html#transformar-un-archivo-.def-en-un-contenedor-.sif",
+    "href": "chapters/archivo_de_definicion.html#transformar-un-archivo-.def-en-un-contenedor-.sif",
+    "title": "Construcción de un contenedor a partir de un archivo de definición (.def)",
+    "section": "🔧 Transformar un archivo .def en un contenedor .sif",
+    "text": "🔧 Transformar un archivo .def en un contenedor .sif\nUna vez que tienes tu archivo de definición completo (por ejemplo: mrbayes_gpu.def), puedes construir un contenedor ejecutable en formato .sif (Singularity Image Format) con el siguiente comando:\napptainer build mrbayes_gpu.sif mrbayes_gpu.def\n\n🧾 Desglose del comando:\n\napptainer build: Es el comando para construir imágenes.\nmrbayes_gpu.sif: Este será el archivo final, un contenedor listo para ejecutar.\nmrbayes_gpu.def: Es tu archivo de definición, que contiene todas las instrucciones para crear el contenedor.\n\n\n\n✅ ¿Qué pasa durante la construcción?\n\nDescarga la imagen base (nvidia/cuda:12.2.0-devel-ubuntu22.04) desde DockerHub.\nEjecuta la sección %post dentro de un entorno aislado.\nAplica las variables de %environment que estarán disponibles cada vez que uses el contenedor.\nIncorpora %runscript como comando por defecto cuando lo ejecutes con run.",
+    "crumbs": [
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Construcción de un contenedor a partir de un archivo de definición (.def)</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/archivo_de_definicion.html#ejemplo-de-uso-del-contenedor-ya-compilado",
+    "href": "chapters/archivo_de_definicion.html#ejemplo-de-uso-del-contenedor-ya-compilado",
+    "title": "Construcción de un contenedor a partir de un archivo de definición (.def)",
+    "section": "🚀 Ejemplo de uso del contenedor ya compilado",
+    "text": "🚀 Ejemplo de uso del contenedor ya compilado\nUna vez que has generado el archivo .sif (por ejemplo, mrbayes_gpu.sif), ya puedes ejecutar MrBayes directamente desde el contenedor con acceso a GPU y múltiples núcleos.\n\n▶️ Ejecución simple\nSi tu archivo de análisis se encuentra en la carpeta datos/ de tu sistema y se llama cactus.nex, puedes ejecutar MrBayes así:\napptainer exec --nv --bind datos:/home mrbayes_gpu.sif mb -i /home/cactus.nex \nExplicación:\n\n--nv: Habilita el acceso a la GPU dentro del contenedor.\n--bind datos:/home: Monta la carpeta datos de tu máquina anfitriona en /home dentro del contenedor.\nmb -i: Ejecuta MrBayes sobre el archivo .nex.\n\n\n\n🧱 Ejecutar en segundo plano con tmux (recomendado)\nPara mantener el análisis corriendo aunque cierres la terminal, usa tmux:\n\nAbre una nueva sesión:\n\ntmux new -s mrbayes\n\nDentro de la sesión, ejecuta:\n\napptainer exec --nv -B datos:/home mrbayes_gpu.sif mb -i /home/cactus.nex &gt; cactus.log 2&gt;&1\n\nPara salir de tmux sin detener el análisis:\n\nPresiona: Ctrl + b seguido de d\n\nPara volver a tu sesión más tarde:\n\ntmux attach -t mrbayes\n\nPara ver si el análisis sigue corriendo:\n\ntail -f cactus.log\n\nSi necesitas cerrar el proceso manualmente:\n\nPrimero encuentra el PID:\nps aux | grep mb\nLuego termina el proceso:\nkill PID",
+    "crumbs": [
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Construcción de un contenedor a partir de un archivo de definición (.def)</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/archivo_de_definicion.html#qué-es-tmux-y-cómo-funciona",
+    "href": "chapters/archivo_de_definicion.html#qué-es-tmux-y-cómo-funciona",
+    "title": "Construcción de un contenedor a partir de un archivo de definición (.def)",
+    "section": "🧰 ¿Qué es tmux y cómo funciona?",
+    "text": "🧰 ¿Qué es tmux y cómo funciona?\ntmux (Terminal MUltipleXer) es una herramienta que te permite crear sesiones de terminal persistentes, muy útil cuando estás trabajando en servidores o corriendo procesos largos como análisis con MrBayes.\nCon tmux puedes:\n\nEjecutar comandos largos sin preocuparte por perder la conexión.\nDesconectarte y dejar procesos corriendo.\nVolver más tarde y recuperar tu sesión justo donde la dejaste.\nDividir la terminal en paneles y trabajar con múltiples ventanas en una sola sesión.\n\n\n🔄 Flujo típico de uso\n\nIniciar una sesión nueva\n\ntmux new -s mrbayes\n🔹 Crea una sesión llamada mrbayes.\n\nEjecutar tu análisis dentro de la sesión\n\napptainer exec --nv -B datos:/home mrbayes_gpu.sif mb -i /home/cactus.nex &gt; cactus.log 2&gt;&1\n\nDesconectarte sin detener el análisis\n\nCtrl + b  luego suelta y presiona  d\nEsto “desconecta” la sesión (detach) pero no detiene el proceso.\n\nVolver a la sesión después\n\ntmux attach -t mrbayes\n\nCerrar la sesión si ya no la necesitas\n\nDesde dentro:\nexit\ntmux kill-session -t mrbayes\n\n\n💡 Tip: Ver sesiones activas\ntmux ls\nEsto muestra todas las sesiones que están en ejecución.",
+    "crumbs": [
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Construcción de un contenedor a partir de un archivo de definición (.def)</span>"
+    ]
   }
 ]

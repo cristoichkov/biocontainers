@@ -1,0 +1,909 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.6.39">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Construcción de un contenedor a partir de un archivo de definición (.def) – Apptainer</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../chapters/contenedor_personalizado.html" rel="prev">
+<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-e26003cea8cd680ca0c55a263523d882.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-c6cbc1d6fb8db58f958c455fce091558.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="styles/custom.css">
+</head>
+
+<body class="nav-sidebar floating">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../chapters/archivo_de_definicion.html"><span class="chapter-title">Construcción de un contenedor a partir de un archivo de definición (.def)</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../">Apptainer</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Introducción a Apptainer</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/install.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Instalación de Apptainer</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/primeros_pasos_con_contenedores.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Primeros pasos con contenedores</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/contenedor_personalizado.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Construcción de un contenedor personalizado</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/archivo_de_definicion.html" class="sidebar-item-text sidebar-link active"><span class="chapter-title">Construcción de un contenedor a partir de un archivo de definición (.def)</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul class="collapse">
+  <li><a href="#crear-un-contenedor-.sif-con-soporte-gpu-usando-un-archivo-.def" id="toc-crear-un-contenedor-.sif-con-soporte-gpu-usando-un-archivo-.def" class="nav-link active" data-scroll-target="#crear-un-contenedor-.sif-con-soporte-gpu-usando-un-archivo-.def">⚙️ Crear un contenedor <code>.sif</code> con soporte GPU usando un archivo <code>.def</code></a>
+  <ul class="collapse">
+  <li><a href="#archivo-de-definición-mrbayes_gpu.def" id="toc-archivo-de-definición-mrbayes_gpu.def" class="nav-link" data-scroll-target="#archivo-de-definición-mrbayes_gpu.def">📄 Archivo de definición: <code>mrbayes_gpu.def</code></a></li>
+  <li><a href="#estructura-y-explicación-de-mrbayes_gpu.def" id="toc-estructura-y-explicación-de-mrbayes_gpu.def" class="nav-link" data-scroll-target="#estructura-y-explicación-de-mrbayes_gpu.def">🧱 Estructura y explicación de <code>mrbayes_gpu.def</code></a></li>
+  <li><a href="#transformar-un-archivo-.def-en-un-contenedor-.sif" id="toc-transformar-un-archivo-.def-en-un-contenedor-.sif" class="nav-link" data-scroll-target="#transformar-un-archivo-.def-en-un-contenedor-.sif">🔧 Transformar un archivo <code>.def</code> en un contenedor <code>.sif</code></a></li>
+  <li><a href="#ejemplo-de-uso-del-contenedor-ya-compilado" id="toc-ejemplo-de-uso-del-contenedor-ya-compilado" class="nav-link" data-scroll-target="#ejemplo-de-uso-del-contenedor-ya-compilado">🚀 Ejemplo de uso del contenedor ya compilado</a></li>
+  <li><a href="#qué-es-tmux-y-cómo-funciona" id="toc-qué-es-tmux-y-cómo-funciona" class="nav-link" data-scroll-target="#qué-es-tmux-y-cómo-funciona">🧰 ¿Qué es <code>tmux</code> y cómo funciona?</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-title">Construcción de un contenedor a partir de un archivo de definición (.def)</span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="crear-un-contenedor-.sif-con-soporte-gpu-usando-un-archivo-.def" class="level1">
+<h1>⚙️ Crear un contenedor <code>.sif</code> con soporte GPU usando un archivo <code>.def</code></h1>
+<section id="archivo-de-definición-mrbayes_gpu.def" class="level2">
+<h2 class="anchored" data-anchor-id="archivo-de-definición-mrbayes_gpu.def">📄 Archivo de definición: <code>mrbayes_gpu.def</code></h2>
+<p>Este archivo contiene instrucciones para:</p>
+<ul>
+<li><p>Instalar herramientas básicas de desarrollo (g++, cmake, make, etc.).</p></li>
+<li><p>Descargar e instalar la biblioteca <strong>BEAGLE</strong> desde su repositorio oficial.</p></li>
+<li><p>Compilar <strong>MrBayes</strong> desde su rama <code>develop</code> con soporte para <strong>MPI</strong> y <strong>BEAGLE</strong>.</p></li>
+<li><p>Configurar variables de entorno para garantizar compatibilidad y desempeño.</p></li>
+<li><p>Incluir <code>gpustat</code> (opcional) para monitorear uso de GPU dentro del contenedor.</p></li>
+</ul>
+</section>
+<section id="estructura-y-explicación-de-mrbayes_gpu.def" class="level2">
+<h2 class="anchored" data-anchor-id="estructura-y-explicación-de-mrbayes_gpu.def">🧱 Estructura y explicación de <code>mrbayes_gpu.def</code></h2>
+<div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># === Apptainer definition file para MrBayes + BEAGLE + GPU ===</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Indica que se usará una imagen de Docker como base</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="ex">Bootstrap:</span> docker</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Imagen base: Ubuntu 22.04 con CUDA 12.2 (soporte GPU)</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="ex">From:</span> nvidia/cuda:12.2.0-devel-ubuntu22.04</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="co"># === Variables de entorno persistentes dentro del contenedor ===</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="ex">%environment</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Configuración regional básica</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>    <span class="bu">export</span> <span class="va">LANG</span><span class="op">=</span>C.UTF-8</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>    <span class="bu">export</span> <span class="va">LC_ALL</span><span class="op">=</span>C.UTF-8</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Asegura que se encuentren las bibliotecas instaladas en /usr/local/lib</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>    <span class="bu">export</span> <span class="va">LD_LIBRARY_PATH</span><span class="op">=</span>/usr/local/lib:<span class="va">$LD_LIBRARY_PATH</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>    <span class="bu">export</span> <span class="va">PKG_CONFIG_PATH</span><span class="op">=</span>/usr/lib/pkgconfig:<span class="va">$PKG_CONFIG_PATH</span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="co"># === Instrucciones para construir el contenedor ===</span></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="ex">%post</span></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Evita prompts interactivos al instalar paquetes</span></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>    <span class="bu">export</span> <span class="va">DEBIAN_FRONTEND</span><span class="op">=</span>noninteractive</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Actualiza paquetes e instala herramientas de compilación y utilidades básicas</span></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>    <span class="ex">apt</span> update <span class="kw">&amp;&amp;</span> <span class="ex">apt</span> install <span class="at">-y</span> <span class="dt">\</span></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>        g++ <span class="dt">\</span></span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>        git <span class="dt">\</span></span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>        make <span class="dt">\</span></span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>        cmake <span class="dt">\</span></span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>        automake <span class="dt">\</span></span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>        wget <span class="dt">\</span></span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>        nano <span class="dt">\</span></span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>        libopenmpi-dev <span class="dt">\</span></span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>        python3 <span class="dt">\</span></span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a>        python3-pip <span class="dt">\</span></span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a>        curl</span>
+<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a>    <span class="co"># (Opcional) Instala gpustat para monitorear la GPU dentro del contenedor</span></span>
+<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a>    <span class="ex">pip3</span> install gpustat</span>
+<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a>    <span class="co"># === Instalación de la biblioteca BEAGLE ===</span></span>
+<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a>    <span class="bu">cd</span> /</span>
+<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Clona el repositorio oficial de BEAGLE (última versión)</span></span>
+<span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a>    <span class="fu">git</span> clone <span class="at">--depth</span><span class="op">=</span>1 https://github.com/beagle-dev/beagle-lib.git</span>
+<span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a>    <span class="bu">cd</span> beagle-lib</span>
+<span id="cb1-45"><a href="#cb1-45" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mkdir</span> build</span>
+<span id="cb1-46"><a href="#cb1-46" aria-hidden="true" tabindex="-1"></a>    <span class="bu">cd</span> build</span>
+<span id="cb1-47"><a href="#cb1-47" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-48"><a href="#cb1-48" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Compila BEAGLE sin soporte JNI ni OpenCL (solo GPU vía CUDA)</span></span>
+<span id="cb1-49"><a href="#cb1-49" aria-hidden="true" tabindex="-1"></a>    <span class="fu">cmake</span> <span class="at">-DBUILD_JNI</span><span class="op">=</span>OFF <span class="at">-DBUILD_OPENCL</span><span class="op">=</span>OFF ..</span>
+<span id="cb1-50"><a href="#cb1-50" aria-hidden="true" tabindex="-1"></a>    <span class="fu">make</span></span>
+<span id="cb1-51"><a href="#cb1-51" aria-hidden="true" tabindex="-1"></a>    <span class="fu">make</span> install</span>
+<span id="cb1-52"><a href="#cb1-52" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-53"><a href="#cb1-53" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Asegura que las rutas a BEAGLE estén disponibles</span></span>
+<span id="cb1-54"><a href="#cb1-54" aria-hidden="true" tabindex="-1"></a>    <span class="bu">export</span> <span class="va">LD_LIBRARY_PATH</span><span class="op">=</span>/usr/local/lib:<span class="va">$LD_LIBRARY_PATH</span></span>
+<span id="cb1-55"><a href="#cb1-55" aria-hidden="true" tabindex="-1"></a>    <span class="bu">export</span> <span class="va">PKG_CONFIG_PATH</span><span class="op">=</span>/usr/lib/pkgconfig:<span class="va">$PKG_CONFIG_PATH</span></span>
+<span id="cb1-56"><a href="#cb1-56" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-57"><a href="#cb1-57" aria-hidden="true" tabindex="-1"></a>    <span class="co"># === Instalación de MrBayes desde la rama 'develop' ===</span></span>
+<span id="cb1-58"><a href="#cb1-58" aria-hidden="true" tabindex="-1"></a>    <span class="bu">cd</span> /</span>
+<span id="cb1-59"><a href="#cb1-59" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Clona la rama de desarrollo (última versión activa)</span></span>
+<span id="cb1-60"><a href="#cb1-60" aria-hidden="true" tabindex="-1"></a>    <span class="fu">git</span> clone <span class="at">--depth</span><span class="op">=</span>1 <span class="at">--branch</span><span class="op">=</span>develop https://github.com/NBISweden/MrBayes.git</span>
+<span id="cb1-61"><a href="#cb1-61" aria-hidden="true" tabindex="-1"></a>    <span class="bu">cd</span> MrBayes</span>
+<span id="cb1-62"><a href="#cb1-62" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-63"><a href="#cb1-63" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Configura MrBayes con soporte para MPI y BEAGLE</span></span>
+<span id="cb1-64"><a href="#cb1-64" aria-hidden="true" tabindex="-1"></a>    <span class="ex">./configure</span> <span class="at">--with-mpi</span> <span class="at">--with-beagle</span><span class="op">=</span>/usr/local</span>
+<span id="cb1-65"><a href="#cb1-65" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-66"><a href="#cb1-66" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Compila e instala MrBayes</span></span>
+<span id="cb1-67"><a href="#cb1-67" aria-hidden="true" tabindex="-1"></a>    <span class="fu">make</span></span>
+<span id="cb1-68"><a href="#cb1-68" aria-hidden="true" tabindex="-1"></a>    <span class="fu">make</span> install</span>
+<span id="cb1-69"><a href="#cb1-69" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-70"><a href="#cb1-70" aria-hidden="true" tabindex="-1"></a><span class="co"># === Comando por defecto al ejecutar el contenedor con 'run' ===</span></span>
+<span id="cb1-71"><a href="#cb1-71" aria-hidden="true" tabindex="-1"></a><span class="ex">%runscript</span></span>
+<span id="cb1-72"><a href="#cb1-72" aria-hidden="true" tabindex="-1"></a>    <span class="bu">echo</span> <span class="st">"Contenedor MrBayes con BEAGLE y GPU listo"</span></span>
+<span id="cb1-73"><a href="#cb1-73" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Ejecuta cualquier comando que se pase al contenedor</span></span>
+<span id="cb1-74"><a href="#cb1-74" aria-hidden="true" tabindex="-1"></a>    <span class="bu">exec</span> <span class="st">"</span><span class="va">$@</span><span class="st">"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<section id="from-imagen-base" class="level3">
+<h3 class="anchored" data-anchor-id="from-imagen-base">🔹 <code>From:</code> — Imagen base</h3>
+<p><code>From: nvidia/cuda:12.2.0-devel-ubuntu22.04</code></p>
+<p>Indica la imagen base de Docker sobre la que se construirá el contenedor. En este caso:</p>
+<ul>
+<li><p><strong>Ubuntu 22.04</strong> como sistema operativo</p></li>
+<li><p><strong>CUDA 12.2</strong> preinstalado, necesario para usar aceleración por GPU.</p></li>
+</ul>
+</section>
+<section id="environment-variables-de-entorno-persistentes" class="level3">
+<h3 class="anchored" data-anchor-id="environment-variables-de-entorno-persistentes">🔹 <code>%environment</code> — Variables de entorno <em>persistentes</em></h3>
+<p><code>%environment     export LANG=C.UTF-8     export LC_ALL=C.UTF-8     export LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH     export PKG_CONFIG_PATH=/usr/lib/pkgconfig:$PKG_CONFIG_PATH</code></p>
+<ul>
+<li><p>Esta sección <strong>define variables de entorno</strong> que estarán disponibles <strong>cada vez que el contenedor se ejecute</strong> (<code>shell</code>, <code>exec</code>, <code>run</code>, etc.).</p></li>
+<li><p>Es útil para asegurarte de que programas como MrBayes encuentren las librerías necesarias sin que el usuario tenga que configurar nada.</p></li>
+</ul>
+<section id="qué-hacen-esas-variables" class="level4">
+<h4 class="anchored" data-anchor-id="qué-hacen-esas-variables">¿Qué hacen esas variables?</h4>
+<ul>
+<li><p><code>LANG</code> y <code>LC_ALL</code>: Configuran la codificación del sistema (evita errores de caracteres).</p></li>
+<li><p><code>LD_LIBRARY_PATH</code>: Le dice al sistema dónde buscar bibliotecas compartidas al ejecutar programas.</p></li>
+<li><p><code>PKG_CONFIG_PATH</code>: Indica dónde buscar archivos <code>.pc</code> que describen cómo compilar y vincular bibliotecas.</p></li>
+</ul>
+</section>
+</section>
+<section id="post-instrucciones-para-construir-el-contenedor" class="level3">
+<h3 class="anchored" data-anchor-id="post-instrucciones-para-construir-el-contenedor">🔹 <code>%post</code> — Instrucciones para construir el contenedor</h3>
+<p><code>%post</code></p>
+<ul>
+<li><p>Esta sección se ejecuta <strong>durante la construcción</strong> del contenedor (<code>build</code>).</p></li>
+<li><p>Aquí se instalan paquetes, descargan programas, compilan y configuran los entornos de ejecución.</p></li>
+</ul>
+<p>Secciones destacadas dentro de <code>%post</code>:</p>
+<ol type="1">
+<li><p><strong>Prevenir prompts interactivos:</strong></p>
+<p><code>export DEBIAN_FRONTEND=noninteractive</code></p>
+<p>Así <code>apt</code> no pedirá confirmaciones durante la instalación.</p></li>
+<li><p><strong>Instalar dependencias:</strong></p>
+<p><code>apt update &amp;&amp; apt install -y ...</code></p>
+<p>Se instalan herramientas de compilación, Python, MPI, etc.</p></li>
+<li><p><strong>Instalar software adicional:</strong></p>
+<ul>
+<li><p><code>gpustat</code>: Monitorea el uso de GPU (opcional).</p></li>
+<li><p><strong>BEAGLE</strong>: Librería para acelerar análisis filogenéticos.</p></li>
+<li><p><strong>MrBayes</strong>: Se descarga, configura y compila con soporte para MPI y BEAGLE.</p></li>
+</ul></li>
+<li><p><strong>Ajustes adicionales al entorno:</strong><br>
+Se vuelven a declarar variables como <code>LD_LIBRARY_PATH</code> para asegurar que las rutas estén accesibles durante compilación.</p></li>
+</ol>
+</section>
+<section id="runscript-comando-por-defecto" class="level3">
+<h3 class="anchored" data-anchor-id="runscript-comando-por-defecto">🔹 <code>%runscript</code> — Comando por defecto</h3>
+<p><code>%runscript     echo "Contenedor MrBayes con BEAGLE y GPU listo"     exec "$@"</code></p>
+<ul>
+<li><p>Esta sección define <strong>qué pasará si alguien usa</strong> <code>apptainer run archivo.sif</code>.</p></li>
+<li><p>Aquí se imprime un mensaje y luego se ejecuta cualquier comando pasado al contenedor (<code>exec "$@"</code>).</p></li>
+</ul>
+<blockquote class="blockquote">
+<p>Si no incluyeras esta sección, el contenedor no sabría qué hacer por defecto al ser ejecutado con <code>run</code>.</p>
+</blockquote>
+</section>
+</section>
+<section id="transformar-un-archivo-.def-en-un-contenedor-.sif" class="level2">
+<h2 class="anchored" data-anchor-id="transformar-un-archivo-.def-en-un-contenedor-.sif">🔧 Transformar un archivo <code>.def</code> en un contenedor <code>.sif</code></h2>
+<p>Una vez que tienes tu archivo de definición completo (por ejemplo: <code>mrbayes_gpu.def</code>), puedes construir un contenedor ejecutable en formato <code>.sif</code> (Singularity Image Format) con el siguiente comando:</p>
+<pre><code>apptainer build mrbayes_gpu.sif mrbayes_gpu.def</code></pre>
+<section id="desglose-del-comando" class="level3">
+<h3 class="anchored" data-anchor-id="desglose-del-comando">🧾 Desglose del comando:</h3>
+<ul>
+<li><p><code>apptainer build</code>: Es el comando para construir imágenes.</p></li>
+<li><p><code>mrbayes_gpu.sif</code>: Este será el <strong>archivo final</strong>, un contenedor listo para ejecutar.</p></li>
+<li><p><code>mrbayes_gpu.def</code>: Es tu <strong>archivo de definición</strong>, que contiene todas las instrucciones para crear el contenedor.</p></li>
+</ul>
+</section>
+<section id="qué-pasa-durante-la-construcción" class="level3">
+<h3 class="anchored" data-anchor-id="qué-pasa-durante-la-construcción">✅ ¿Qué pasa durante la construcción?</h3>
+<ol type="1">
+<li><p><strong>Descarga la imagen base</strong> (<code>nvidia/cuda:12.2.0-devel-ubuntu22.04</code>) desde DockerHub.</p></li>
+<li><p><strong>Ejecuta la sección <code>%post</code></strong> dentro de un entorno aislado.</p></li>
+<li><p><strong>Aplica las variables de <code>%environment</code></strong> que estarán disponibles cada vez que uses el contenedor.</p></li>
+<li><p><strong>Incorpora <code>%runscript</code></strong> como comando por defecto cuando lo ejecutes con <code>run</code>.</p></li>
+</ol>
+</section>
+</section>
+<section id="ejemplo-de-uso-del-contenedor-ya-compilado" class="level2">
+<h2 class="anchored" data-anchor-id="ejemplo-de-uso-del-contenedor-ya-compilado">🚀 Ejemplo de uso del contenedor ya compilado</h2>
+<p>Una vez que has generado el archivo <code>.sif</code> (por ejemplo, <code>mrbayes_gpu.sif</code>), ya puedes ejecutar MrBayes directamente desde el contenedor con acceso a GPU y múltiples núcleos.</p>
+<section id="ejecución-simple" class="level3">
+<h3 class="anchored" data-anchor-id="ejecución-simple">▶️ Ejecución simple</h3>
+<p>Si tu archivo de análisis se encuentra en la carpeta <code>datos/</code> de tu sistema y se llama <code>cactus.nex</code>, puedes ejecutar MrBayes así:</p>
+<pre><code>apptainer exec --nv --bind datos:/home mrbayes_gpu.sif mb -i /home/cactus.nex </code></pre>
+<p><strong>Explicación:</strong></p>
+<ul>
+<li><p><code>--nv</code>: Habilita el acceso a la GPU dentro del contenedor.</p></li>
+<li><p><code>--bind datos:/home</code>: Monta la carpeta <code>datos</code> de tu máquina anfitriona en <code>/home</code> dentro del contenedor.</p></li>
+<li><p><code>mb -i</code>: Ejecuta MrBayes sobre el archivo <code>.nex</code>.</p></li>
+</ul>
+</section>
+<section id="ejecutar-en-segundo-plano-con-tmux-recomendado" class="level3">
+<h3 class="anchored" data-anchor-id="ejecutar-en-segundo-plano-con-tmux-recomendado">🧱 Ejecutar en segundo plano con <code>tmux</code> (recomendado)</h3>
+<p>Para mantener el análisis corriendo aunque cierres la terminal, usa <strong><code>tmux</code></strong>:</p>
+<ol type="1">
+<li><strong>Abre una nueva sesión:</strong></li>
+</ol>
+<p><code>tmux new -s mrbayes</code></p>
+<ol start="2" type="1">
+<li><strong>Dentro de la sesión, ejecuta:</strong></li>
+</ol>
+<p><code>apptainer exec --nv -B datos:/home mrbayes_gpu.sif mb -i /home/cactus.nex &gt; cactus.log 2&gt;&amp;1</code></p>
+<ol start="3" type="1">
+<li><strong>Para salir de <code>tmux</code> sin detener el análisis:</strong></li>
+</ol>
+<p>Presiona: <code>Ctrl + b</code> seguido de <code>d</code></p>
+<ol start="4" type="1">
+<li><strong>Para volver a tu sesión más tarde:</strong></li>
+</ol>
+<p><code>tmux attach -t mrbayes</code></p>
+<ol start="5" type="1">
+<li><strong>Para ver si el análisis sigue corriendo:</strong></li>
+</ol>
+<p><code>tail -f cactus.log</code></p>
+<ol start="6" type="1">
+<li><strong>Si necesitas cerrar el proceso manualmente:</strong></li>
+</ol>
+<p>Primero encuentra el PID:</p>
+<p><code>ps aux | grep mb</code></p>
+<p>Luego termina el proceso:</p>
+<p><code>kill PID</code></p>
+</section>
+</section>
+<section id="qué-es-tmux-y-cómo-funciona" class="level2">
+<h2 class="anchored" data-anchor-id="qué-es-tmux-y-cómo-funciona">🧰 ¿Qué es <code>tmux</code> y cómo funciona?</h2>
+<p><code>tmux</code> (Terminal MUltipleXer) es una herramienta que te permite <strong>crear sesiones de terminal persistentes</strong>, muy útil cuando estás trabajando en servidores o corriendo procesos largos como análisis con MrBayes.</p>
+<p>Con <code>tmux</code> puedes:</p>
+<ul>
+<li><p>Ejecutar comandos largos sin preocuparte por perder la conexión.</p></li>
+<li><p><strong>Desconectarte</strong> y dejar procesos corriendo.</p></li>
+<li><p><strong>Volver más tarde</strong> y recuperar tu sesión justo donde la dejaste.</p></li>
+<li><p>Dividir la terminal en paneles y trabajar con múltiples ventanas en una sola sesión.</p></li>
+</ul>
+<section id="flujo-típico-de-uso" class="level3">
+<h3 class="anchored" data-anchor-id="flujo-típico-de-uso">🔄 Flujo típico de uso</h3>
+<ol type="1">
+<li><strong>Iniciar una sesión nueva</strong></li>
+</ol>
+<p><code>tmux new -s mrbayes</code></p>
+<p>🔹 Crea una sesión llamada <code>mrbayes</code>.</p>
+<ol start="2" type="1">
+<li><strong>Ejecutar tu análisis dentro de la sesión</strong></li>
+</ol>
+<p><code>apptainer exec --nv -B datos:/home mrbayes_gpu.sif mb -i /home/cactus.nex &gt; cactus.log 2&gt;&amp;1</code></p>
+<ol start="3" type="1">
+<li><strong>Desconectarte sin detener el análisis</strong></li>
+</ol>
+<p><code>Ctrl + b  luego suelta y presiona  d</code></p>
+<p>Esto “desconecta” la sesión (<code>detach</code>) pero <strong>no detiene el proceso</strong>.</p>
+<ol start="4" type="1">
+<li><strong>Volver a la sesión después</strong></li>
+</ol>
+<p><code>tmux attach -t mrbayes</code></p>
+<ol start="5" type="1">
+<li><strong>Cerrar la sesión si ya no la necesitas</strong></li>
+</ol>
+<p>Desde dentro:</p>
+<p><code>exit</code></p>
+<p><code>tmux kill-session -t mrbayes</code></p>
+</section>
+<section id="tip-ver-sesiones-activas" class="level3">
+<h3 class="anchored" data-anchor-id="tip-ver-sesiones-activas">💡 Tip: Ver sesiones activas</h3>
+<p><code>tmux ls</code></p>
+<p>Esto muestra todas las sesiones que están en ejecución.</p>
+
+
+</section>
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../chapters/contenedor_personalizado.html" class="pagination-link" aria-label="Construcción de un contenedor personalizado">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-title">Construcción de un contenedor personalizado</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
